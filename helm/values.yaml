@@ -1,19 +1,34 @@
 ui:
   image: harjotsingh2k19/retail-store-ui
   tag: "v1"
+  resources:
+    requests: { cpu: 50m, memory: 128Mi }
+    limits: { cpu: 200m, memory: 256Mi }
 
 catalog:
   image: harjotsingh2k19/retail-store-catalog
   tag: "v1"
+  resources:
+    requests: { cpu: 50m, memory: 64Mi }
+    limits: { cpu: 100m, memory: 128Mi }
 
 cart:
   image: harjotsingh2k19/retail-store-cart
   tag: "v1"
+  resources:
+    requests: { cpu: 100m, memory: 256Mi }
+    limits: { cpu: 300m, memory: 512Mi }
 
 orders:
   image: harjotsingh2k19/retail-store-orders
   tag: "v1"
+  resources:
+    requests: { cpu: 100m, memory: 256Mi }
+    limits: { cpu: 300m, memory: 512Mi }
 
 checkout:
   image: harjotsingh2k19/retail-store-checkout
   tag: "v1"
+  resources:
+    requests: { cpu: 50m, memory: 128Mi }
+    limits: { cpu: 200m, memory: 256Mi }

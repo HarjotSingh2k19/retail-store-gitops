@@ -26,9 +26,22 @@ spec:
               value: "in-memory"
             - name: RETAIL_CHECKOUT_ENDPOINTS_ORDERS
               value: "http://orders:8080"
+          resources:
+            requests:
+              cpu: {{ .Values.checkout.resources.requests.cpu }}
+              memory: {{ .Values.checkout.resources.requests.memory }}
+            limits:
+              cpu: {{ .Values.checkout.resources.limits.cpu }}
+              memory: {{ .Values.checkout.resources.limits.memory }}
           readinessProbe:
             httpGet:
               path: /health
               port: 8080
             initialDelaySeconds: 10
             periodSeconds: 5
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: 8080
+            initialDelaySeconds: 30
+            periodSeconds: 10

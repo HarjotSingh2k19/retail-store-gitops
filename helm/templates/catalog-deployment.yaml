@@ -24,6 +24,13 @@ spec:
               value: "8080"
             - name: RETAIL_CATALOG_PERSISTENCE_PROVIDER
               value: "in-memory"
+          resources:
+            requests:
+              cpu: {{ .Values.catalog.resources.requests.cpu }}
+              memory: {{ .Values.catalog.resources.requests.memory }}
+            limits:
+              cpu: {{ .Values.catalog.resources.limits.cpu }}
+              memory: {{ .Values.catalog.resources.limits.memory }}
           readinessProbe:
             httpGet:
               path: /catalog/size
