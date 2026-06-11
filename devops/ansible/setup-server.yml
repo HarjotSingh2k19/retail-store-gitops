@@ -1,0 +1,169 @@
+---
+- name: Setup GitOps Factory Server
+  hosts: servers
+  become: true
+  
+  vars:
+    kind_version: "v0.22.0"
+    kubectl_version: "v1.29.0"
+
+  tasks:
+    # ─────────────────────────────────────────────
+    # GROUP 1 — System Preparation
+    # ─────────────────────────────────────────────
+    - name: Update apt cache
+      apt:
+        update_cache: true
+        cache_valid_time: 3600
+
+    - name: Upgrade all packages
+      apt:
+        upgrade: dist
+
+    - name: Install required system packages
+      apt:
+        name:
+          - curl
+          - git
+          - unzip
+          - wget
+          - apt-transport-https
+          - ca-certificates
+          - gnupg
+          - lsb-release
+          - software-properties-common
+        state: present
+
+    # ─────────────────────────────────────────────
+    # GROUP 2 — Docker Engine
+    # ─────────────────────────────────────────────
+    - name: Create directory for Docker GPG key
+      file:
+        path: /etc/apt/keyrings
+        state: directory
+        mode: '0755'
+
+    - name: Download Docker GPG key
+      shell: |
+        curl -fsSL https://download.docker.com/linux/ubuntu/gpg | \
+        gpg --dearmor -o /etc/apt/keyrings/docker.gpg
+      args:
+        creates: /etc/apt/keyrings/docker.gpg
+
+    - name: Add Docker apt repository
+      shell: |
+        echo \
+        "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.gpg] \
+        https://download.docker.com/linux/ubuntu \
+        $(lsb_release -cs) stable" | \
+        tee /etc/apt/sources.list.d/docker.list > /dev/null
+      args:
+        creates: /etc/apt/sources.list.d/docker.list
+
+    - name: Update apt cache after adding Docker repo
+      apt:
+        update_cache: true
+
+    - name: Install Docker Engine
+      apt:
+        name:
+          - docker-ce
+          - docker-ce-cli
+          - containerd.io
+          - docker-buildx-plugin
+          - docker-compose-plugin
+        state: present
+
+    - name: Add ubuntu user to docker group
+      user:
+        name: ubuntu
+        groups: docker
+        append: true
+
+    - name: Start and enable Docker service
+      service:
+        name: docker
+        state: started
+        enabled: true
+
+    # ─────────────────────────────────────────────
+    # GROUP 3 — KIND (Kubernetes IN Docker)
+    # ─────────────────────────────────────────────
+    - name: Check if kind is already installed
+      stat:
+        path: /usr/local/bin/kind
+      register: kind_binary
+
+    - name: Download KIND binary
+      get_url:
+        url: "https://kind.sigs.k8s.io/dl/{{ kind_version }}/kind-linux-amd64"
+        dest: /usr/local/bin/kind
+        mode: '0755'
+      when: not kind_binary.stat.exists
+
+    # ─────────────────────────────────────────────
+    # GROUP 4 — kubectl
+    # ─────────────────────────────────────────────
+    - name: Check if kubectl is already installed
+      stat:
+        path: /usr/local/bin/kubectl
+      register: kubectl_binary
+
+    - name: Download kubectl binary
+      get_url:
+        url: "https://dl.k8s.io/release/{{ kubectl_version }}/bin/linux/amd64/kubectl"
+        dest: /usr/local/bin/kubectl
+        mode: '0755'
+      when: not kubectl_binary.stat.exists
+
+    # ─────────────────────────────────────────────
+    # GROUP 5 — Helm
+    # ─────────────────────────────────────────────
+    - name: Check if helm is already installed
+      stat:
+        path: /usr/local/bin/helm
+      register: helm_binary
+
+    - name: Download Helm install script
+      get_url:
+        url: https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3
+        dest: /tmp/get-helm.sh
+        mode: '0755'
+      when: not helm_binary.stat.exists
+
+    - name: Install Helm
+      shell: /tmp/get-helm.sh
+      when: not helm_binary.stat.exists
+
+    # ─────────────────────────────────────────────
+    # GROUP 6 — Jenkins Container (FIXED)
+    # ─────────────────────────────────────────────
+    - name: Fix Docker Socket Permissions
+      file:
+        path: /var/run/docker.sock
+        mode: '0666'
+        
+    - name: Check if Jenkins container already exists
+      shell: docker ps -a --format '{%raw%}{{.Names}}{%endraw%}' | grep -w jenkins
+      register: jenkins_container
+      ignore_errors: true
+      changed_when: false
+
+    - name: Run Jenkins container
+      shell: |
+        docker run -d \
+          --name jenkins \
+          --user root \
+          --restart=always \
+          -p 8080:8080 \
+          -p 50000:50000 \
+          -v /var/run/docker.sock:/var/run/docker.sock \
+          -v jenkins_home:/var/jenkins_home \
+          jenkins/jenkins:lts
+      when: jenkins_container.rc != 0
+
+    - name: Wait for Jenkins to start
+      wait_for:
+        port: 8080
+        delay: 30
+        timeout: 120
