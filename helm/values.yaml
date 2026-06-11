@@ -1,0 +1,19 @@
+ui:
+  image: harjotsingh2k19/retail-store-ui
+  tag: "v1"
+
+catalog:
+  image: harjotsingh2k19/retail-store-catalog
+  tag: "v1"
+
+cart:
+  image: harjotsingh2k19/retail-store-cart
+  tag: "v1"
+
+orders:
+  image: harjotsingh2k19/retail-store-orders
+  tag: "v1"
+
+checkout:
+  image: harjotsingh2k19/retail-store-checkout
+  tag: "v1"
