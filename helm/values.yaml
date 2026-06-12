@@ -2,7 +2,7 @@ namespace: retail
 
 ui:
   image: harjotsingh2k19/retail-store-ui
-  tag: "4"
+  tag: "5"
   resources:
     requests:
       cpu: "50m"
@@ -13,7 +13,7 @@ ui:
 
 catalog:
   image: harjotsingh2k19/retail-store-catalog
-  tag: "4"
+  tag: "5"
   resources:
     requests:
       cpu: "50m"
@@ -24,7 +24,7 @@ catalog:
 
 cart:
   image: harjotsingh2k19/retail-store-cart
-  tag: "4"
+  tag: "5"
   resources:
     requests:
       cpu: "100m"
@@ -35,7 +35,7 @@ cart:
 
 orders:
   image: harjotsingh2k19/retail-store-orders
-  tag: "4"
+  tag: "5"
   resources:
     requests:
       cpu: "100m"
@@ -46,7 +46,7 @@ orders:
 
 checkout:
   image: harjotsingh2k19/retail-store-checkout
-  tag: "4"
+  tag: "5"
   resources:
     requests:
       cpu: "50m"
