@@ -167,3 +167,13 @@
         port: 8080
         delay: 30
         timeout: 120
+
+    - name: Check if Docker CLI is installed in Jenkins
+      command: docker exec jenkins which docker
+      register: docker_check
+      ignore_errors: yes
+      changed_when: false
+
+    - name: Install Docker CLI inside Jenkins container
+      command: docker exec -u 0 jenkins bash -c "apt-get update && apt-get install -y docker.io"
+      when: docker_check.rc != 0
