@@ -1,3 +1,10 @@
+# Helm
+helm/charts/
+helm/.helmignore
+*.tmp
+.DS_Store
+
+
 # Terraform
 .terraform/
 *.tfstate
@@ -7,7 +14,3 @@
 
 # Ansible
 *.retry
-
-# OS
-.DS_Store
-*.tfvars

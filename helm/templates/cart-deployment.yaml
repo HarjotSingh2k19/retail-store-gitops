@@ -2,6 +2,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: cart
+  namespace: {{ .Values.namespace }}
   labels:
     app: cart
 spec:
@@ -24,11 +25,11 @@ spec:
               value: "8080"
           resources:
             requests:
-              cpu: {{ .Values.cart.resources.requests.cpu }}
-              memory: {{ .Values.cart.resources.requests.memory }}
+              cpu: "{{ .Values.cart.resources.requests.cpu }}"
+              memory: "{{ .Values.cart.resources.requests.memory }}"
             limits:
-              cpu: {{ .Values.cart.resources.limits.cpu }}
-              memory: {{ .Values.cart.resources.limits.memory }}
+              cpu: "{{ .Values.cart.resources.limits.cpu }}"
+              memory: "{{ .Values.cart.resources.limits.memory }}"
           readinessProbe:
             httpGet:
               path: /actuator/health

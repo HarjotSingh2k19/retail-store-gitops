@@ -2,6 +2,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: catalog
+  namespace: {{ .Values.namespace }}
   labels:
     app: catalog
 spec:
@@ -26,11 +27,11 @@ spec:
               value: "in-memory"
           resources:
             requests:
-              cpu: {{ .Values.catalog.resources.requests.cpu }}
-              memory: {{ .Values.catalog.resources.requests.memory }}
+              cpu: "{{ .Values.catalog.resources.requests.cpu }}"
+              memory: "{{ .Values.catalog.resources.requests.memory }}"
             limits:
-              cpu: {{ .Values.catalog.resources.limits.cpu }}
-              memory: {{ .Values.catalog.resources.limits.memory }}
+              cpu: "{{ .Values.catalog.resources.limits.cpu }}"
+              memory: "{{ .Values.catalog.resources.limits.memory }}"
           readinessProbe:
             httpGet:
               path: /catalog/size
