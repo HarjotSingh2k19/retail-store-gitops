@@ -1,0 +1,4 @@
+# Copy this file to inventory.ini and replace with your EC2 public IP
+# inventory.ini is gitignored — never commit real IPs
+[servers]
+YOUR_EC2_PUBLIC_IP_HERE

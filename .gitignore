@@ -13,4 +13,4 @@ helm/.helmignore
 *.tfvars
 
 # Ansible
-*.retry
+*.retrydevops/ansible/inventory.ini
