@@ -31,7 +31,7 @@ This is the **GitOps configuration repository** — the second half of the two-r
 ```
 ┌─────────────────────────┐      ┌──────────────────────────┐
 │  retail-store-sample-app │      │   retail-store-gitops    │
-│   (THIS IS NOT THIS)     │      │      (THIS REPO)         │
+│   (App Source Code)     │      │      (This Repository)         │
 │                          │      │                          │
 │  ├── src/                │      │  ├── helm/               │
 │  ├── Dockerfiles         │      │  │   ├── Chart.yaml      │
